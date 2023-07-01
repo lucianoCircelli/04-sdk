@@ -1,0 +1,63 @@
+  #23_07_01
+  #Use github-action-preview-environment-controller in Pull Request triggered pipeline,
+  #and use it's outputs to determinate what environments should be deployed and what cleaned up
+  #https://github.com/marketplace/actions/preview-environment-controller
+  # trying to use runs-on: self-hosted
+  name: Pull Request
+  on:
+    pull_request:
+      branches: [ 'main' ]
+      types: [opened, synchronize, reopened, closed, labeled, unlabeled]
+
+  jobs:
+    context:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Preview deployments controller
+          uses: cloudposse/github-action-preview-environment-controller@main
+          id: controller
+          with:
+            labels: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+            open: ${{ github.event.pull_request.state == 'open' }}
+            env-label: |
+              preview: deploy
+              qa1: deploy/qa1
+              qa2: deploy/qa2
+
+      outputs:
+        labels_env: ${{ steps.controller.outputs.labels_env }}
+        deploy_envs: ${{ steps.controller.outputs.deploy_envs }}
+        destroy_envs: ${{ steps.controller.outputs.destroy_envs }}
+
+    deploy:
+      runs-on: ubuntu-latest
+      if: ${{ needs.context.outputs.deploy_envs != '[]'  }}
+      strategy:
+        matrix:
+          env: ${{ fromJson(needs.context.outputs.deploy_envs) }}
+      environment:
+        name: ${{ matrix.env }}
+      needs: [ context ]
+      steps:
+        - name: Deploy
+          uses: example/deploy@main
+          id: deploy
+          with:
+            environment: ${{ matrix.env }}
+            operation: deploy
+
+    destroy:
+      runs-on: ubuntu-latest
+      if: ${{ needs.context.outputs.destroy_envs != '[]'  }}
+      strategy:
+        matrix:
+          env: ${{ fromJson(needs.context.outputs.destroy_envs) }}
+      needs: [ context ]
+      steps:
+        - name: Destroy
+          uses: example/deploy@main
+          id: deploy
+          with:
+            environment: ${{ matrix.env }}
+            operation: destroy
+            runs-on: self-hosted
