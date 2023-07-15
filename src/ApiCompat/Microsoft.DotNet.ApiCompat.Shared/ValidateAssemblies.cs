@@ -1,5 +1,5 @@
-// Copyright (c) .NET Foundation and contributors. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,8 @@ namespace Microsoft.DotNet.ApiCompat
     {
         public static void Run(Func<ISuppressionEngine, ISuppressableLog> logFactory,
             bool generateSuppressionFile,
+            bool preserveUnnecessarySuppressions,
+            bool permitUnnecessarySuppressions,
             string[]? suppressionFiles,
             string? suppressionOutputFile,
             string? noWarn,
@@ -33,7 +35,7 @@ namespace Microsoft.DotNet.ApiCompat
         {
             // Initialize the service provider
             ApiCompatServiceProvider serviceProvider = new(logFactory,
-                () => new SuppressionEngine(suppressionFiles, noWarn, generateSuppressionFile),
+                () => SuppressionFileHelper.CreateSuppressionEngine(suppressionFiles, noWarn, generateSuppressionFile),
                 (log) => new RuleFactory(log,
                     enableRuleAttributesMustMatch,
                     enableRuleCannotChangeParameterName),
@@ -93,8 +95,13 @@ namespace Microsoft.DotNet.ApiCompat
             {
                 SuppressionFileHelper.GenerateSuppressionFile(serviceProvider.SuppressionEngine,
                     serviceProvider.SuppressableLog,
+                    preserveUnnecessarySuppressions,
                     suppressionFiles,
                     suppressionOutputFile);
+            }
+            else if (!permitUnnecessarySuppressions)
+            {
+                SuppressionFileHelper.ValidateUnnecessarySuppressions(serviceProvider.SuppressionEngine, serviceProvider.SuppressableLog);
             }
         }
 

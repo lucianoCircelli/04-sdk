@@ -1,6 +1,5 @@
-﻿// Copyright (c) .NET Foundation and contributors. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-//
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Globalization;
 using System.Text;
@@ -100,8 +99,11 @@ namespace Microsoft.DotNet.Cli.New.IntegrationTests
 
             string[] expectedErrors = new[]
             {
-@$"Warning: [{testTemplateLocation + Path.DirectorySeparatorChar}.template.config/template.json]: id of the post action 'pa2' at index '3' is not unique. Only the first post action that uses this id will be localized.",
+"""
+Warning: The template 'name' (TestAssets.Invalid.Localiation.ValidationFailure) has the following validation warnings:
+   [Warning][CONFIG0201] Id of the post action 'pa2' at index '3' is not unique. Only the first post action that uses this id will be localized.
 
+""",
 """
 Error: The template 'name' (TestAssets.Invalid.Localiation.ValidationFailure) has the following validation errors in 'de-DE' localization:
    [Error][LOC001] In localization file under the post action with id 'pa1', there are localized strings for manual instruction(s) with ids 'do-not-exist'. These manual instructions do not exist in the template.json file and should be removed from localization file.
@@ -190,11 +192,11 @@ Error: The template 'name' (TestAssets.Invalid.Localiation.ValidationFailure) ha
             string[] expectedErrors = new[]
                             {
                     """
-                    The template 'name' (TestAssets.TemplateWithLocalization) has the following validation errors in 'de-DE' localization:
+                    Fehler: Die Vorlage 'name' (TestAssets.TemplateWithLocalization) weist die folgenden Überprüfungsfehler in Lokalisierung „de-DE“ auf:
                        [Error][LOC001] In der Lokalisierungsdatei unter der POST-Aktion mit der ID „pa1“ befinden sich lokalisierte Zeichenfolgen für manuelle Anweisungen mit den IDs „do-not-exist“. Diese manuellen Anweisungen sind in der Datei „template.json“ nicht vorhanden und sollten aus der Lokalisierungsdatei entfernt werden.
         
                     """,
-                    "Failed to load the 'de-DE' localization the template 'name' (TestAssets.TemplateWithLocalization): the localization file is not valid. The localization will be skipped."
+                    "Warnung: Lokalisierung „de-DE“ der Vorlage 'name' (TestAssets.TemplateWithLocalization) konnte nicht geladen werden: Die Lokalisierungsdatei ist ungültig. Die Lokalisierung wird übersprungen."
                 };
 
             CommandResult result = new DotnetNewCommand(_log, "-i", tmpTemplateLocation)

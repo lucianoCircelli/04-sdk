@@ -1,5 +1,5 @@
-// Copyright (c) .NET Foundation and contributors. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
 using System.Collections.Generic;
@@ -99,7 +99,7 @@ namespace Microsoft.DotNet.Cli.Workload.Update.Tests
 
             ParseResult listParseResult = Parser.Instance.Parse(new[]
             {
-                "dotnet", "workload", "list", "--machine-readable", InstallingWorkloadCommandParser.VersionOption.Aliases.First(), "7.0.100"
+                "dotnet", "workload", "list", "--machine-readable", InstallingWorkloadCommandParser.VersionOption.Name, "7.0.100"
             });
 
             _workloadListCommand = new WorkloadListCommand(
@@ -141,7 +141,7 @@ namespace Microsoft.DotNet.Cli.Workload.Update.Tests
             _workloadListCommand = new WorkloadListCommand(
                 Parser.Instance.Parse(new[]
                 {
-                    "dotnet", "workload", "list", "--machine-readable", InstallingWorkloadCommandParser.VersionOption.Aliases.First(), "5.0.306"
+                    "dotnet", "workload", "list", "--machine-readable", InstallingWorkloadCommandParser.VersionOption.Name, "5.0.306"
                 }),
                 _reporter,
                 nugetPackageDownloader: _nugetDownloader,
@@ -161,7 +161,7 @@ namespace Microsoft.DotNet.Cli.Workload.Update.Tests
             _workloadListCommand = new WorkloadListCommand(
                 Parser.Instance.Parse(new[]
                 {
-                    "dotnet", "workload", "list", "--machine-readable", InstallingWorkloadCommandParser.VersionOption.Aliases.First(), "6.0.100"
+                    "dotnet", "workload", "list", "--machine-readable", InstallingWorkloadCommandParser.VersionOption.Name, "6.0.100"
                 }),
                 _reporter,
                 nugetPackageDownloader: _nugetDownloader,
